@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const PORT = 3001
+const morgan = require('morgan')
 
 let data = [
   { 
@@ -26,6 +27,7 @@ let data = [
 ]
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 app.get('/api/persons', (request, response) => {
   response.json(data)
