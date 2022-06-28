@@ -29,6 +29,17 @@ app.get('/api/persons', (request, response) => {
   response.json(data)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const entry = data.find(entry => entry.id === id)
+
+  if (entry) {
+    response.json(entry)
+  } else {
+    response.status(404).end()
+  }
+})
+
 app.get('/info', (request, response) => {
   const dateToday = Date()
   const phonebookCount = data.length
