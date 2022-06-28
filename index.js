@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3001
 
-const data = [
+let data = [
   { 
     "id": 1,
     "name": "Arto Hellas", 
@@ -35,6 +35,18 @@ app.get('/api/persons/:id', (request, response) => {
 
   if (entry) {
     response.json(entry)
+  } else {
+    response.status(404).end()
+  }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const entry = data.find(entry => entry.id === id)
+
+  if (entry) {
+    data = data.filter(entry => entry.id !== id)
+    response.status(204).end()
   } else {
     response.status(404).end()
   }
