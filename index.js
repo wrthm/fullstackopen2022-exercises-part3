@@ -25,6 +25,8 @@ let data = [
   }
 ]
 
+app.use(express.json())
+
 app.get('/api/persons', (request, response) => {
   response.json(data)
 })
@@ -38,6 +40,19 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
+})
+
+app.post('/api/persons', (request, response) => {
+  const id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+  const { name, number } = request.body
+  const newEntry = {
+    id,
+    name,
+    number,
+  }
+  data = data.concat(newEntry)
+
+  response.status(201).json(newEntry)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
