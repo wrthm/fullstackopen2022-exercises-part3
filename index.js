@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 const morgan = require('morgan')
 
 morgan.token('body', (request, response) => request.method === 'POST' ? JSON.stringify(request.body) : '')
