@@ -29,23 +29,19 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  const id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
   const { name, number } = request.body
   if (!name) {
     return response.status(400).json({ error: 'name is missing' })
   } else if (!number) {
     return response.status(400).json({ error: 'number is missing' })
-  } else if (data.find(entry => entry.name === name)) {
-    return response.status(400).json({ error: 'name must be unique' })
   }
-  const newEntry = {
-    id,
-    name,
-    number,
-  }
-  data = data.concat(newEntry)
 
-  response.status(201).json(newEntry)
+  const newEntry = new Person({ name, number })
+  newEntry
+    .save()
+    .then(result => {
+      response.status(201).json(result)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
