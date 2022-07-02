@@ -55,13 +55,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
         response.status(404).end()
       }
     })
-    .catch(error => {
-      console.error(error.message)
-      if (error.name == "CastError") {
-        return response.status(400).send({ error: 'Malformed id' })
-      }
-      next(error)
-    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response) => {
@@ -69,6 +63,21 @@ app.get('/info', (request, response) => {
   const phonebookCount = data.length
   response.send(`<p>Phonebook has info for ${phonebookCount} people</p><p>${dateToday}</p>`)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'Unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name == "CastError") {
+    return response.status(400).send({ error: 'Malformed id' })
+  }
+  response.status(500).send({ error: 'Internal server error' })
+}
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`Server now running on port ${PORT}`)
