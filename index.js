@@ -44,16 +44,24 @@ app.post('/api/persons', (request, response) => {
     })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const entry = data.find(entry => entry.id === id)
-
-  if (entry) {
-    data = data.filter(entry => entry.id !== id)
-    response.status(204).end()
-  } else {
-    response.status(404).end()
-  }
+app.delete('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  Person
+    .findByIdAndDelete(id)
+    .then(result => {
+      if (result) {
+        response.status(204).end()
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.error(error.message)
+      if (error.name == "CastError") {
+        return response.status(400).send({ error: 'Malformed id' })
+      }
+      next(error)
+    })
 })
 
 app.get('/info', (request, response) => {
