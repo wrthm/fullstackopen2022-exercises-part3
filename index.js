@@ -17,15 +17,18 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const entry = data.find(entry => entry.id === id)
-
-  if (entry) {
-    response.json(entry)
-  } else {
-    response.status(404).end()
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  Person
+    .findById(id)
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        response.json(updatedPerson)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -75,8 +78,10 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response) => {
   const dateToday = Date()
-  const phonebookCount = data.length
-  response.send(`<p>Phonebook has info for ${phonebookCount} people</p><p>${dateToday}</p>`)
+  Person.find({}).then(result => {
+    const phonebookCount = result.length
+    response.send(`<p>Phonebook has info for ${phonebookCount} people</p><p>${dateToday}</p>`)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
