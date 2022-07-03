@@ -24,7 +24,7 @@ const save = result => {
 
   const person = new Person({
     name,
-    number
+    number,
   })
 
   return person.save()
@@ -49,7 +49,7 @@ mongoose
     } else {
       console.log(`${result.name} (number ${result.number}) was added to phonebook`)
     }
-    
+
     mongoose.connection.close()
   })
   .catch(error => console.log(error))

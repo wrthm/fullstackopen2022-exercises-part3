@@ -5,7 +5,7 @@ const PORT = process.env.PORT
 const morgan = require('morgan')
 const Person = require('./models/person')
 
-morgan.token('body', (request, response) => request.method === 'POST' ? JSON.stringify(request.body) : '')
+morgan.token('body', request => request.method === 'POST' ? JSON.stringify(request.body) : '')
 
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
@@ -49,7 +49,6 @@ app.post('/api/persons', (request, response, next) => {
           .catch(error => next(error))
       }
     })
-  
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
