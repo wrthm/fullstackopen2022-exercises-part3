@@ -31,13 +31,8 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
-  if (!name) {
-    return response.status(400).json({ error: 'name is missing' })
-  } else if (!number) {
-    return response.status(400).json({ error: 'number is missing' })
-  }
 
   const newEntry = new Person({ name, number })
   newEntry
@@ -45,6 +40,7 @@ app.post('/api/persons', (request, response) => {
     .then(result => {
       response.status(201).json(result)
     })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -65,7 +61,10 @@ app.put('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   const { name, number } = request.body
   Person
-    .findByIdAndUpdate(id, { name, number }, { new: true })
+    .findByIdAndUpdate(
+      id,
+      { name, number },
+      { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
       if (updatedPerson) {
         response.json(updatedPerson)
@@ -91,10 +90,12 @@ app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  if (error.name == "CastError") {
-    return response.status(400).send({ error: 'Malformed id' })
+  if (error.name === 'CastError') {
+    return response.status(400).json({ error: 'Malformed id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
-  response.status(500).send({ error: 'Internal server error' })
+  response.status(500).json({ error: 'Internal server error' })
 }
 
 app.use(errorHandler)
